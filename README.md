@@ -3,7 +3,7 @@
 ## What is a producer?
 
 Producer is an independent reacticve class which can accept multiple streams as input and produce new output whenever any of input stream gets new value.
-Each producer overrides its `produce` pure function to define how the output would be produced, based on `latest input` and `latest output`.
+Each producer overrides its `produce` pure function to define how the output would be produced.
 Producers know nothing about eachother, but they will connect to eachother by whoever instantiating them.
 
 ## How to use?
@@ -161,7 +161,6 @@ class MyHomePage extends StatelessWidget {
             const Text(
               'You have pushed the button this many times:',
             ),
-            // TODO(mohammad): ProducerBuilder API for handling error + loading + success in spearate builders.
             SizedBox(
               height: 35,
               child: ProducerBuilder<CounterProducer, CounterProducerOutput>(
