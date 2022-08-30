@@ -88,15 +88,32 @@ class MyHomePage extends StatelessWidget {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => context.read<CounterLogicProducer>().produceManually(
-              CounterLogicProducerOutput(logic: _singleIncrementLogic),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            FloatingActionButton(
+              onPressed: () =>
+                  context.read<CounterLogicProducer>().produceManually(
+                        CounterLogicProducerOutput(logic: _incrementByOneLogic),
+                      ),
+              tooltip: 'Increment by 1',
+              child: const Icon(Icons.add),
             ),
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+            FloatingActionButton(
+              onPressed: () =>
+                  context.read<CounterLogicProducer>().produceManually(
+                        CounterLogicProducerOutput(logic: _multiplyByTwoLogic),
+                      ),
+              tooltip: 'Multiply by 2',
+              child: const Icon(Icons.close),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  int _singleIncrementLogic(int input) => input + 1;
+  int _incrementByOneLogic(int input) => input + 1;
+  int _multiplyByTwoLogic(int input) => input * 2;
 }
