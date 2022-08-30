@@ -79,7 +79,8 @@ abstract class Producer<Input extends ProducerIO, Output extends ProducerIO>
   Future<void> _init() async {
     _streamValue = StreamValue<Output>(
       stream
-          .where((ProducerState<Output> event) => event.data != null)
+          .where((ProducerState<Output> event) =>
+              event.status == ProducerStatus.success)
           .map((ProducerState<Output> event) => event.data!),
     );
 
