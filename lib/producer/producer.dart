@@ -106,7 +106,7 @@ abstract class Producer<Input extends ProducerIO, Output extends ProducerIO>
   List<StreamValue<Object>> getStreamDependencies();
 
   @protected
-  Future<Output> produce(Input input);
+  Future<Output> produce(Input input, Output? currentState);
 
   @protected
   void onAllDependenciesResolved() {}
@@ -116,7 +116,7 @@ abstract class Producer<Input extends ProducerIO, Output extends ProducerIO>
     emitLoading();
 
     try {
-      final Output output = await produce(dependency);
+      final Output output = await produce(dependency, state.data);
 
       emitSuccess(output);
     } on Exception catch (e) {
@@ -145,7 +145,7 @@ abstract class IndependentProducer<Output extends ProducerIO>
 
   // This function will never get called as we have no input.
   @override
-  Future<Output> produce(EmptyInput input) {
+  Future<Output> produce(EmptyInput input, Output? currentState) {
     // ignore: null_argument_to_non_null_type
     return Future.value();
   }

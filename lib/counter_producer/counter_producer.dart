@@ -31,10 +31,13 @@ class CounterProducer
   //TODO(mohammad): produce function should provide the non-stream value of inputs as we're sure we have all of them here + we can capture all inputs an be sure they will nnot change untill end of the function.
   // what if we only pass StreamValue<InputModel> to producer? this will solve the above issue. other non-stream dependecies can be manually added to constrcutor.
   @override
-  Future<CounterProducerOutput> produce(CounterProducerInput input) async {
+  Future<CounterProducerOutput> produce(
+    CounterProducerInput input,
+    CounterProducerOutput? currentState,
+  ) async {
     // await Future.delayed(const Duration(milliseconds: 1000));
 
-    final int currentResult = state.data?.result ?? 0;
+    final int currentResult = currentState?.result ?? 0;
     final int Function(int) logic = await input.logic.value;
 
     final int newResult = logic(currentResult);
