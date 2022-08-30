@@ -25,7 +25,7 @@ class CounterProducer
   CounterProducer(CounterProducerInput dependency)
       : super(
           dependency,
-          initialValue: CounterProducerOutput(result: 0),
+          initialOutput: CounterProducerOutput(result: 0),
         );
 
   //TODO(mohammad): produce function should provide the non-stream value of inputs as we're sure we have all of them here + we can capture all inputs an be sure they will nnot change untill end of the function.
@@ -33,11 +33,11 @@ class CounterProducer
   @override
   Future<CounterProducerOutput> produce(
     CounterProducerInput input,
-    CounterProducerOutput? currentState,
+    CounterProducerOutput? latestOutput,
   ) async {
     // await Future.delayed(const Duration(milliseconds: 1000));
 
-    final int currentResult = currentState?.result ?? 0;
+    final int currentResult = latestOutput?.result ?? 0;
     final int Function(int) logic = await input.logic.value;
 
     final int newResult = logic(currentResult);

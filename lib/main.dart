@@ -22,10 +22,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<CounterProducer>(
-            create: (BuildContext context) => _counterSystem),
-        BlocProvider<CounterLogicProducer>(
-            create: (BuildContext context) => _counterLogicSystem)
+        BlocProvider<CounterProducer>.value(value: _counterSystem),
+        BlocProvider<CounterLogicProducer>.value(value: _counterLogicSystem)
       ],
       child: MaterialApp(
         title: 'Flutter Demo',

@@ -45,12 +45,12 @@ abstract class ProducerIO {}
 
 abstract class Producer<Input extends ProducerIO, Output extends ProducerIO>
     extends Cubit<ProducerState<Output>> {
-  Producer(this.dependency, {Output? initialValue, Duration? debouncer})
+  Producer(this.dependency, {Output? initialOutput, Duration? debouncer})
       : super(ProducerState<Output>(
-          status: initialValue == null
+          status: initialOutput == null
               ? ProducerStatus.initial
               : ProducerStatus.success,
-          data: initialValue,
+          data: initialOutput,
         )) {
     _init();
   }
@@ -106,7 +106,7 @@ abstract class Producer<Input extends ProducerIO, Output extends ProducerIO>
   List<StreamValue<Object>> getStreamDependencies();
 
   @protected
-  Future<Output> produce(Input input, Output? currentState);
+  Future<Output> produce(Input input, Output? latestOutput);
 
   @protected
   void onAllDependenciesResolved() {}
@@ -145,7 +145,7 @@ abstract class IndependentProducer<Output extends ProducerIO>
 
   // This function will never get called as we have no input.
   @override
-  Future<Output> produce(EmptyInput input, Output? currentState) {
+  Future<Output> produce(EmptyInput input, Output? latestOutput) {
     // ignore: null_argument_to_non_null_type
     return Future.value();
   }
