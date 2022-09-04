@@ -3,17 +3,32 @@
 ## What is a producer?
 
 Producer is an independent reacticve class which can accept multiple streams as input and produce new output whenever any of input stream gets new value.
-Each producer overrides its `produce` pure function to define how the output would be produced, based on `latest input` and `latest output`.
+Each producer overrides its `produce` pure function to define how the output would be produced.
 Producers know nothing about eachother, but they will connect to eachother by whoever instantiating them.
 
 ## How to use?
-1. Before anything, think about the output you want to produce, what's the type of it. as an example, we want a counter which produce a single `int` at any possible time. but its not like other counters which only adds to previous value. it can also multiply the value!
-2. Then think about the required dependencies/inputs in order to produce that output. in our example, we can't say we need a single int, cause that wouldn't be enough for applying multiplication. instead we need a function which takes our value and do whatever it wants with it, then returning it!
+**1.** Before anything, think about the output you want to produce, what's the type of it. as an example, we want a counter which produce a single `int` at any possible time. but its not like other counters which only adds to previous value. it can also multiply the value!
+
+**2.** Then think about the required dependencies/inputs in order to produce that output. in our example, we can't say we need a single int, cause that wouldn't be enough for applying multiplication. instead we need a function which takes our value and do whatever it wants with it, then returning it!
 ``` dart
 typedef CounterLogic = int Function(int);
 ```
-3. Make sure there is a chance that your defined inputs would change in the life cycle of your app, cause otherwise all you need is a simple cubit, not a producer.
-4. Create a model for your inputs, call it `FooProducerInput` and extend it from `ProducerIO`. don't forget that the changing dependecies should be type of `StreamValue<T>` (Its same as stream but also holds latest value):
+**3.** For the final action before coding, make sure there is a chance that your defined inputs would change in the life cycle of your app, cause otherwise all you need is a simple cubit, not a producer.
+
+**4.** Create a model for your output, call it `FooProducerOutput` and extend it from `ProducerIO`.
+
+```dart
+class CounterProducerOutput extends ProducerIO {
+  int result;
+
+  CounterProducerOutput({
+    required this.result,
+  });
+}
+
+```
+
+**5.** Create a model for your inputs, call it `FooProducerInput` and extend it from `ProducerIO`. don't forget that the changing dependecies should be type of `StreamValue<T>` (Its same as stream but also holds latest value):
 
 ```dart
 class CounterProducerInput extends ProducerIO {
@@ -26,7 +41,7 @@ class CounterProducerInput extends ProducerIO {
 
 ```
 
-4. Create a `FooProducer` class and extend it from `Producer`. In our example we also need to pass initial output(state).
+**6.** Create a `FooProducer` class and extend it from `Producer`. In our example we also need to pass initial output(state).
 ```dart
 class CounterProducer
     extends Producer<CounterProducerInput, CounterProducerOutput> {
@@ -37,14 +52,14 @@ class CounterProducer
         );
 }
 ```
-5. Override required `getStreamDependencies` function and pass all fields in `FooProducerInput` which was type of `StreamValue`.
+**7.** Override required `getStreamDependencies` function and pass all fields in `FooProducerInput` which was type of `StreamValue`.
 ```dart
   @override
   List<StreamValue<Object>> getStreamDependencies() => [dependency.logic];
 }
 ```
 
-6. This is the main step. Override `produce` function and define how the output would be produced based on `inputs` and `latest output`:
+**8.** This is the main step. Override `produce` function and define how the output would be produced based on `inputs` and `latest output`:
 ```dart
 @override
   Future<CounterProducerOutput> produce(
@@ -65,12 +80,11 @@ class CounterProducer
 ```
 
 
-7. Who can provide me the input?
+**9.** Who can provide me the input?
 
 In this example our input is a logic which comes from user at anygiven time and it can change, so we need to produce that as well!
 we need another producer for producing the logic, but should we do all of these steps again? i say it depends. if we need some (changing)dependency in order to produce logic, then yes, but in this case, there is none. so our `CounterLogicProducer` has no changing input. we have anther type of producers called `IndependentProducer` which accepts no input, so lets extend out new producer from this abstract class.
 luckily this class has nothing to override, so all you have to do is to create its class and its output model.
-since they are independent from any input, we need to produce them manually. thats why we also have a public function called `produceManually(Output)` in any subclass of `IndependentProducer`. so in our example, we can call this function and produce logics from anywhere.
 
 ```dart
 class CounterLogicProducerOutput extends ProducerIO {
@@ -87,7 +101,7 @@ class CounterLogicProducer
 
 ```
 
-8. How to connect producers? we can do that by a pure function which can be used anywhere in the app:
+**10.** How to connect producers? we can do that by a pure function which can be used anywhere in the app:
 
 ```dart
   CounterProducer buildCounterSystem(
@@ -103,23 +117,23 @@ class CounterLogicProducer
 ```
 
 
-9. Now we should provide these producers to our widget tree. since producers are also cubits, we can provide them using `MultiBlocProvider`:
+**11.** Now we should provide these producers to our widget tree. since producers are also cubits, we can provide them using `MultiBlocProvider`:
 
 ```dart
 class MyApp extends StatelessWidget {
   MyApp({Key? key}) : super(key: key);
-  late final CounterLogicProducer _counterLogicSystem =
-      ProducerConstructors.buildCounterLogicSystem();
+  late final CounterLogicProducer _counterLogicProducer =
+      ProducerConstructors.buildCounterLogicProducer();
 
-  late final CounterProducer _counterSystem =
-      ProducerConstructors.buildCounterSystem(_counterLogicSystem);
+  late final CounterProducer _counterProducer =
+      ProducerConstructors.buildCounterSystem(_counterLogicProducer);
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<CounterProducer>.value(value: _counterSystem),
-        BlocProvider<CounterLogicProducer>.value(value: _counterLogicSystem)
+        BlocProvider<CounterProducer>.value(value: _counterProducer),
+        BlocProvider<CounterLogicProducer>.value(value: _counterLogicProducer)
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
@@ -136,7 +150,7 @@ class MyApp extends StatelessWidget {
 
 ```
 
-10. It's finaly the time to use them!
+**12.** It's finaly the time to use them!
 
 ```dart
 
@@ -161,7 +175,6 @@ class MyHomePage extends StatelessWidget {
             const Text(
               'You have pushed the button this many times:',
             ),
-            // TODO(mohammad): ProducerBuilder API for handling error + loading + success in spearate builders.
             SizedBox(
               height: 35,
               child: ProducerBuilder<CounterProducer, CounterProducerOutput>(
@@ -196,6 +209,8 @@ class MyHomePage extends StatelessWidget {
           children: [
             FloatingActionButton(
               onPressed: () =>
+              // `produceManually` is a special function which only `IndependentProducer`s have. they have ability to emit output via this public method.
+              // Note that regular `Producer`s won't need this, as they will emit output themselves, when their input changes.
                   context.read<CounterLogicProducer>().produceManually(
                         CounterLogicProducerOutput(logic: _incrementByOneLogic),
                       ),
