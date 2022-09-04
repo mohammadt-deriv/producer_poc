@@ -12,18 +12,18 @@ void main() {
 class MyApp extends StatelessWidget {
   MyApp({Key? key}) : super(key: key);
   // TODO(mohammad): is there another way to construct producers, so the widget ramains const?
-  late final CounterLogicProducer _counterLogicSystem =
-      ProducerConstructors.buildCounterLogicSystem();
+  late final CounterLogicProducer _counterLogicProducer =
+      ProducerConstructors.buildCounterLogicProducer();
 
-  late final CounterProducer _counterSystem =
-      ProducerConstructors.buildCounterSystem(_counterLogicSystem);
+  late final CounterProducer _counterProducer =
+      ProducerConstructors.buildCounterSystem(_counterLogicProducer);
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<CounterProducer>.value(value: _counterSystem),
-        BlocProvider<CounterLogicProducer>.value(value: _counterLogicSystem)
+        BlocProvider<CounterProducer>.value(value: _counterProducer),
+        BlocProvider<CounterLogicProducer>.value(value: _counterLogicProducer)
       ],
       child: MaterialApp(
         title: 'Flutter Demo',

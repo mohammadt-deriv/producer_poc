@@ -9,8 +9,8 @@ typedef ProducerSuccessBuilder<T> = Widget Function(
 typedef ProducerErrorBuilder<T> = Widget Function(
     BuildContext context, String error, T? previousState);
 
-class ProducerBuilder<ProducerType extends Producer<ProducerIO, T>,
-    T extends ProducerIO> extends StatelessWidget {
+class ProducerBuilder<ProducerType extends Producer<T>, T extends ProducerIO>
+    extends StatelessWidget {
   final ProducerType producer;
 
   final ProducerLoadingBuilder<T> loadingBuilder;

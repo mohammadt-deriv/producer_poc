@@ -31,9 +31,13 @@ class StreamValue<T> {
     return Future<T>.value(_value);
   }
 
+  T? get valueSync => _value;
+
   void addCallback(StreamCallback<T> callback) {
     _callbacks.add(callback);
   }
+
+  void clearCallbacks() => _callbacks.clear();
 
   void dispose() => _subscription.cancel();
 }
