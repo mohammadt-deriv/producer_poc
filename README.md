@@ -1,5 +1,5 @@
-This concept is **Deprecated** for now since it limits cubit ability to only *combine* input streams.
-Better solutions is to exposes *Sink*s in cubits instead of *Stream*s and let developer do necessary logic on them in order to produce cubit output.
+This concept is **Deprecated** for now since it limits cubit ability to only **combine** input streams.
+Better solutions is to exposes **Sink**s in cubits instead of **Stream**s and let developer do necessary logic on them in order to produce cubit output.
 
 
 # Producer
